@@ -1629,8 +1629,10 @@ int process_frame_mgmt(wifi_interface_info_t *interface, struct ieee80211_mgmt *
 #if defined(BANANA_PI_PORT) && (HOSTAPD_VERSION >= 211)
             supplicant_event(&interface->wpa_s, EVENT_RX_MGMT, &event);
 #endif
-        } else {
+        } else if (interface->u.ap.hapd.iface != NULL) {
             wpa_supplicant_event(&interface->u.ap.hapd, EVENT_RX_MGMT, &event);
+        } else {
+            wifi_hal_error_print("%s:%d: hapd iface is null - dropping\n", __func__, __LINE__);
         }
         pthread_mutex_unlock(&g_wifi_hal.hapd_lock);
     }
